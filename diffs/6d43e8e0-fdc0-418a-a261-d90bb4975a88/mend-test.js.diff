@@ -1,0 +1,20 @@
++const { execFile } = require('child_process');
+ const express = require("express");
+ const { exec } = require("child_process");
+ 
+ const app = express();
+ 
+ app.get("/run", (req, res) => {
+-  exec(req.query.command, (error, stdout) => {
++  // Define a whitelist of allowed commands
++  const allowedCommands = ['ls', 'pwd', 'whoami']; // Add allowed commands here
++  const command = req.query.command;
++  if (!allowedCommands.includes(command)) {
++    return res.status(400).send('Invalid command');
++  }
++  execFile(command, (error, stdout) => {
+     res.send(stdout);
+   });
+ });
+ 
+ app.listen(3000);
